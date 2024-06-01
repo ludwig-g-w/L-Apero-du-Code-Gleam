@@ -2,7 +2,7 @@ PROJECT_DIR = $(shell dirname $(shell pwd))
 TIDY=2>/dev/null ; true
 
 tutorial : 
-	@echo "\033[0;95 TLDR: run \"make kickstart\"\033[0m \n \
+	@echo "\033[0;95mTLDR: run \"make kickstart\"\033[0m \n \
 	a bit longer, for docker you need to build the image, \n \
 	then launch a container, \n \
 	then attach a terminal to this running container \n \
