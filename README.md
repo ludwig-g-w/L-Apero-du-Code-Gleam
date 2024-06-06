@@ -1,25 +1,24 @@
-# apero_webapp
+<p align="center">
+  <img src="./assets/apero-code-banner.png" width="200" />
+</p>
 
-[![Package Version](https://img.shields.io/hexpm/v/apero_webapp)](https://hex.pm/packages/apero_webapp)
-[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/apero_webapp/)
+# L'Apero du Code homepage - A Gleam Webapp
 
-```sh
-gleam add apero_webapp
-```
-```gleam
-import apero_webapp
+Collaborative web project for the [L'Apero du Code](https://www.meetup.com/lapero-du-code/) meetup. 
 
-pub fn main() {
-  // TODO: An example of the project in use
-}
-```
+Let's build the homepage for our meetup, design and content is up for debate.
 
-Further documentation can be found at <https://hexdocs.pm/apero_webapp>.
+[Gleam](https://gleam.run/) is the language of choice, it's a new language that compiles to JavaScript and Erlang, and it's a great way for everybody to learn something new.
 
-## Development
+ask for invites from @Ludwig
+
+## Resources
+- Relevant tutorial: https://gleaming.dev/articles/building-your-first-gleam-web-app/
+- Gleam docs: https://gleam.run/documentation/
+
+## Getting started
 
 ```sh
 gleam run   # Run the project
 gleam test  # Run the tests
-gleam shell # Run an Erlang shell
 ```
