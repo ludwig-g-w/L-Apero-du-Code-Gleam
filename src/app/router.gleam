@@ -16,11 +16,19 @@ pub fn handle_request(req: Request) -> Response {
       let body = string_builder.from_string("<h1>Foo, Bar!</h1>")
       wisp.html_response(body, 200)
     }
-    _ -> { // Give the home page by default.
+    ["favicon.ico"] -> static_file(req)
+    [] -> {
+      // Give the home page by default.
       home.home_page()
       |> layout.layout
       |> element.to_document_string_builder
       |> wisp.html_response(200)
     }
+    _ -> wisp.not_found()
   }
+}
+
+fn static_file(req: Request) -> Response {
+  use <- wisp.serve_static(req, under: "/", from: "./priv/static/")
+  wisp.ok()
 }

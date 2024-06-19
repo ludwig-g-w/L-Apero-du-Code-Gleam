@@ -1,3 +1,7 @@
+import gleam/bool
+import gleam/http.{Get}
+import gleam/int.{to_string}
+import gleam/string_builder
 import wisp
 
 /// The middleware stack that the request handler uses. The stack is itself a
@@ -27,6 +31,70 @@ pub fn middleware(
   // Rewrite HEAD requests to GET requests and return an empty body.
   use req <- wisp.handle_head(req)
 
+  use <- wisp.require_method(req, Get)
+
+  use <- default_responses
+
   // Handle the request!
   handle_request(req)
+}
+
+fn default_responses(handle_request: fn() -> wisp.Response) -> wisp.Response {
+  let response = handle_request()
+
+  // The `bool.guard` function is used to return the original request if the
+  // body is not `wisp.Empty`.
+  use <- bool.guard(when: response.body != wisp.Empty, return: response)
+
+  // You can use any logic to return appropriate responses depending on what is
+  // best for your application.
+  // I'm going to match on the status code and depending on what it is add
+  // different HTML as the body. This is a good option for most applications.
+  case response.status {
+    404 | 405 ->
+      [
+        "<h1>",
+        to_string(response.status),
+        "</h1>",
+        "<h2>There's nothing here</h2>",
+      ]
+      |> string_builder.from_strings
+      |> wisp.html_body(response, _)
+
+    400 | 422 ->
+      ["<h1>", to_string(response.status), "</h1>", "<h2>Bad request</h2>"]
+      |> string_builder.from_strings
+      |> wisp.html_body(response, _)
+
+    413 ->
+      [
+        "<h1>",
+        to_string(response.status),
+        "</h1>",
+        "<h2>Request entity too large</h2>",
+      ]
+      |> string_builder.from_strings
+      |> wisp.html_body(response, _)
+
+    418 ->
+      ["<h1>", to_string(response.status), "</h1>", "<h2> I'm a teapot"]
+      |> string_builder.from_strings
+      |> wisp.html_body(response, _)
+
+    500 ->
+      [
+        "<h1>",
+        to_string(response.status),
+        "</h1>",
+        "<h2>Internal server error</h2>",
+      ]
+      |> string_builder.from_strings
+      |> wisp.html_body(response, _)
+
+    // For other status codes redirect to the home page
+    _ ->
+      ["<h1>", to_string(response.status), "</h1>", "<h2>Unknown error</h2>"]
+      |> string_builder.from_strings
+      |> wisp.html_body(response, _)
+  }
 }
