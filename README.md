@@ -14,6 +14,7 @@ ask for invites from @Ludwig
 
 ## Resources
 - Relevant tutorial: https://gleaming.dev/articles/building-your-first-gleam-web-app/
+- Another tutorial: https://gleamtours.com/lustre-tutorial/introduction/welcome-to-lustre/
 - Gleam docs: https://gleam.run/documentation/
 
 ## Getting started
