@@ -12,6 +12,9 @@ pub fn layout(elements: List(Element(t))) -> Element(t) {
       ]),
       // html.link([attribute.rel("stylesheet"), attribute.href("/static/app.css")]),
     ]),
-    html.body([], elements),
+    html.body([], [
+      html.header([], [html.h1([], [element.text("Apero du Code!")])]),
+      html.main([], elements),
+    ]),
   ])
 }

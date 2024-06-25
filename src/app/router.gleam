@@ -1,8 +1,8 @@
 import app/pages/home
 import app/pages/layout
 import app/web
-import gleam/string_builder
 import lustre/element
+import lustre/element/html
 import wisp.{type Request, type Response}
 
 /// The HTTP request handler- your application!
@@ -13,8 +13,10 @@ pub fn handle_request(req: Request) -> Response {
 
   case wisp.path_segments(req) {
     ["foo", "bar"] -> {
-      let body = string_builder.from_string("<h1>Foo, Bar!</h1>")
-      wisp.html_response(body, 200)
+      [html.h2([], [element.text("Foo, Bar!")])]
+      |> layout.layout
+      |> element.to_document_string_builder
+      |> wisp.html_response(200)
     }
     ["favicon.ico"] -> static_file(req)
     [] -> {
