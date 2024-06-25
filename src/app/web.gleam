@@ -39,6 +39,9 @@ pub fn middleware(
   handle_request(req)
 }
 
+/// this middleware is used if the underlying handle_request function has
+/// returned an empty body, meaning that the request could not be served. This
+/// will search for typical error status and produce a page result accordingly.
 fn default_responses(handle_request: fn() -> wisp.Response) -> wisp.Response {
   let response = handle_request()
 
@@ -46,55 +49,16 @@ fn default_responses(handle_request: fn() -> wisp.Response) -> wisp.Response {
   // body is not `wisp.Empty`.
   use <- bool.guard(when: response.body != wisp.Empty, return: response)
 
-  // You can use any logic to return appropriate responses depending on what is
-  // best for your application.
-  // I'm going to match on the status code and depending on what it is add
-  // different HTML as the body. This is a good option for most applications.
-  case response.status {
-    404 | 405 ->
-      [
-        "<h1>",
-        to_string(response.status),
-        "</h1>",
-        "<h2>There's nothing here</h2>",
-      ]
-      |> string_builder.from_strings
-      |> wisp.html_body(response, _)
-
-    400 | 422 ->
-      ["<h1>", to_string(response.status), "</h1>", "<h2>Bad request</h2>"]
-      |> string_builder.from_strings
-      |> wisp.html_body(response, _)
-
-    413 ->
-      [
-        "<h1>",
-        to_string(response.status),
-        "</h1>",
-        "<h2>Request entity too large</h2>",
-      ]
-      |> string_builder.from_strings
-      |> wisp.html_body(response, _)
-
-    418 ->
-      ["<h1>", to_string(response.status), "</h1>", "<h2> I'm a teapot"]
-      |> string_builder.from_strings
-      |> wisp.html_body(response, _)
-
-    500 ->
-      [
-        "<h1>",
-        to_string(response.status),
-        "</h1>",
-        "<h2>Internal server error</h2>",
-      ]
-      |> string_builder.from_strings
-      |> wisp.html_body(response, _)
-
-    // For other status codes redirect to the home page
-    _ ->
-      ["<h1>", to_string(response.status), "</h1>", "<h2>Unknown error</h2>"]
-      |> string_builder.from_strings
-      |> wisp.html_body(response, _)
+  let error_desc = case response.status {
+    400 | 422 -> "Bad request"
+    404 | 405 -> "There's nothing here"
+    413 -> "Request entity too large"
+    418 -> "I'm a teapot"
+    500 -> "Internal server error"
+    _ -> "Unknown error"
   }
+
+  ["<h1>", to_string(response.status), "</h1>", "<h2>", error_desc, "</h2>"]
+  |> string_builder.from_strings
+  |> wisp.html_body(response, _)
 }
