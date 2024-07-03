@@ -3,6 +3,8 @@
 </p>
 
 # L'Apero du Code homepage - A Gleam Webapp
+[![Package Version](https://img.shields.io/hexpm/v/apero_webapp)](https://hex.pm/packages/apero_webapp)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/apero_webapp/)
 
 Collaborative web project for the [L'Apero du Code](https://www.meetup.com/lapero-du-code/) meetup. 
 

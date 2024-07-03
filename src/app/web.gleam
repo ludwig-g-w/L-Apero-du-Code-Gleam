@@ -1,3 +1,7 @@
+import gleam/bool
+import gleam/http.{Get}
+import gleam/int.{to_string}
+import gleam/string_builder
 import wisp
 
 /// The middleware stack that the request handler uses. The stack is itself a
@@ -27,6 +31,34 @@ pub fn middleware(
   // Rewrite HEAD requests to GET requests and return an empty body.
   use req <- wisp.handle_head(req)
 
+  use <- wisp.require_method(req, Get)
+
+  use <- default_responses
+
   // Handle the request!
   handle_request(req)
+}
+
+/// this middleware is used if the underlying handle_request function has
+/// returned an empty body, meaning that the request could not be served. This
+/// will search for typical error status and produce a page result accordingly.
+fn default_responses(handle_request: fn() -> wisp.Response) -> wisp.Response {
+  let response = handle_request()
+
+  // The `bool.guard` function is used to return the original request if the
+  // body is not `wisp.Empty`.
+  use <- bool.guard(when: response.body != wisp.Empty, return: response)
+
+  let error_desc = case response.status {
+    400 | 422 -> "Bad request"
+    404 | 405 -> "There's nothing here"
+    413 -> "Request entity too large"
+    418 -> "I'm a teapot"
+    500 -> "Internal server error"
+    _ -> "Unknown error"
+  }
+
+  ["<h1>", to_string(response.status), "</h1>", "<h2>", error_desc, "</h2>"]
+  |> string_builder.from_strings
+  |> wisp.html_body(response, _)
 }
